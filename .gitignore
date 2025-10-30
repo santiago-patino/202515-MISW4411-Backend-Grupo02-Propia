@@ -1,0 +1,79 @@
+# ========================================
+# ARCHIVOS ESPECÍFICOS
+# ========================================
+
+# Carpetas de documentos
+docs/
+data/
+documents/
+results/
+logs/
+
+# Archivos de configuración con claves
+apikey.json
+.env
+.env.local
+.env.production
+.env.staging
+
+# Bases de datos vectoriales
+vector_db/
+chroma_db/
+vectorstore/
+db/
+*.db
+*.sqlite
+*.sqlite3
+
+# ========================================
+# PYTHON
+# ========================================
+
+# Entornos virtuales
+langchain-env/
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Distribución / empaquetado
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Datos temporales y cachés
+.cache/
+cache/
+tmp/
+temp/
+.tmp/

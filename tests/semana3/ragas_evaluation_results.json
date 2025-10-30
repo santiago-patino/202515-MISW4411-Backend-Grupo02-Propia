@@ -1,0 +1,42 @@
+{
+  "Baseline (Semana 2)": {
+    "faithfulness": 1.0,
+    "context_precision": 0.0,
+    "context_recall": 1.0,
+    "answer_relevancy": 1.0,
+    "total_questions": 10,
+    "valid_answers": 10
+  },
+  "Con Preprocesamiento": {
+    "faithfulness": 1.0,
+    "context_precision": 0.0,
+    "context_recall": 1.0,
+    "answer_relevancy": 1.0,
+    "total_questions": 10,
+    "valid_answers": 10
+  },
+  "Con Reranking": {
+    "faithfulness": 0.9,
+    "context_precision": 0.0,
+    "context_recall": 1.0,
+    "answer_relevancy": 1.0,
+    "total_questions": 10,
+    "valid_answers": 10
+  },
+  "Con Query Rewriting": {
+    "faithfulness": 1.0,
+    "context_precision": 0.0,
+    "context_recall": 1.0,
+    "answer_relevancy": 1.0,
+    "total_questions": 10,
+    "valid_answers": 10
+  },
+  "Completo (Semana 3)": {
+    "faithfulness": 1.0,
+    "context_precision": 0.0,
+    "context_recall": 1.0,
+    "answer_relevancy": 1.0,
+    "total_questions": 10,
+    "valid_answers": 10
+  }
+}

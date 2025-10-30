@@ -1,0 +1,189 @@
+{
+  "ragas_configuration": {
+    "description": "Configuración completa RAGAS para métodos Semantic y Fixed Size",
+    "version": "1.0",
+    "evaluation_date": "2025-01-15"
+  },
+  
+  "semantic_chunking_cases": [
+    {
+      "case_id": "semantic_001",
+      "description": "Semantic chunking con configuración estándar",
+      "parameters": {
+        "chunking_strategy": "semantic",
+        "breakpoint_threshold_type": "percentile",
+        "breakpoint_threshold_amount": 95,
+        "semantic_embeddings_model": "models/embedding-001",
+        "semantic_similarity_threshold": 0.7,
+        "semantic_min_chunk_size": 200,
+        "semantic_max_chunk_size": 2000
+      },
+      "expected_results": {
+        "avg_chunk_size": 800,
+        "chunk_size_range": [200, 2000],
+        "similarity_threshold": 0.7,
+        "embeddings_model": "models/embedding-001"
+      },
+      "reproducibility": {
+        "seed": 42,
+        "deterministic": true,
+        "expected_chunks_per_doc": 5
+      }
+    },
+    {
+      "case_id": "semantic_002", 
+      "description": "Semantic chunking con umbrales estrictos",
+      "parameters": {
+        "chunking_strategy": "semantic",
+        "breakpoint_threshold_type": "standard_deviation",
+        "breakpoint_threshold_amount": 2.0,
+        "semantic_embeddings_model": "models/embedding-001",
+        "semantic_similarity_threshold": 0.8,
+        "semantic_min_chunk_size": 300,
+        "semantic_max_chunk_size": 1500
+      },
+      "expected_results": {
+        "avg_chunk_size": 1000,
+        "chunk_size_range": [300, 1500],
+        "similarity_threshold": 0.8,
+        "embeddings_model": "models/embedding-001"
+      },
+      "reproducibility": {
+        "seed": 42,
+        "deterministic": true,
+        "expected_chunks_per_doc": 4
+      }
+    }
+  ],
+  
+  "fixed_size_chunking_cases": [
+    {
+      "case_id": "fixed_001",
+      "description": "Fixed size chunking con configuración estándar",
+      "parameters": {
+        "chunking_strategy": "fixed_size",
+        "chunk_size": 800,
+        "chunk_overlap": 150,
+        "fixed_size_separators": ["\n\n", "\n", " ", ""],
+        "fixed_size_keep_separator": true,
+        "fixed_size_strip_whitespace": true,
+        "fixed_size_length_function": "character_count",
+        "fixed_size_min_chunk_size": 100,
+        "fixed_size_max_chunk_size": 1200
+      },
+      "expected_results": {
+        "avg_chunk_size": 800,
+        "chunk_size_range": [750, 850],
+        "overlap_size": 150,
+        "separators_used": ["\n\n", "\n", " ", ""]
+      },
+      "reproducibility": {
+        "seed": 42,
+        "deterministic": true,
+        "expected_chunks_per_doc": 6
+      }
+    },
+    {
+      "case_id": "fixed_002",
+      "description": "Fixed size chunking con separadores personalizados",
+      "parameters": {
+        "chunking_strategy": "fixed_size",
+        "chunk_size": 1000,
+        "chunk_overlap": 200,
+        "fixed_size_separators": ["\n\n", "\n", ". ", " "],
+        "fixed_size_keep_separator": true,
+        "fixed_size_strip_whitespace": true,
+        "fixed_size_length_function": "character_count",
+        "fixed_size_min_chunk_size": 200,
+        "fixed_size_max_chunk_size": 1200
+      },
+      "expected_results": {
+        "avg_chunk_size": 1000,
+        "chunk_size_range": [950, 1050],
+        "overlap_size": 200,
+        "separators_used": ["\n\n", "\n", ". ", " "]
+      },
+      "reproducibility": {
+        "seed": 42,
+        "deterministic": true,
+        "expected_chunks_per_doc": 5
+      }
+    }
+  ],
+  
+  "ragas_evaluation_config": {
+    "llm_config": {
+      "model": "gemini-2.5-flash-lite",
+      "temperature": 0,
+      "max_output_tokens": 1024
+    },
+    "embeddings_config": {
+      "model": "models/embedding-002",
+      "task_type": "retrieval_document",
+      "dimensions": 768
+    },
+    "metrics": [
+      "faithfulness",
+      "context_precision", 
+      "context_recall"
+    ],
+    "evaluation_thresholds": {
+      "faithfulness_min": 0.6,
+      "context_precision_min": 0.6,
+      "context_recall_min": 0.6
+    }
+  },
+  
+  "reproducibility_guarantees": {
+    "deterministic_seeds": [42, 123, 456],
+    "fixed_parameters": {
+      "temperature": 0,
+      "max_tokens": 1024,
+      "batch_size": 90
+    },
+    "validation_checks": [
+      "chunk_size_consistency",
+      "embedding_dimensions",
+      "similarity_thresholds",
+      "separator_priority"
+    ]
+  },
+  
+  "test_documents": [
+    {
+      "document_id": "doc_001",
+      "type": "PDF",
+      "size_kb": 1024,
+      "expected_semantic_chunks": 5,
+      "expected_fixed_chunks": 6
+    },
+    {
+      "document_id": "doc_002", 
+      "type": "PDF",
+      "size_kb": 2048,
+      "expected_semantic_chunks": 8,
+      "expected_fixed_chunks": 10
+    }
+  ],
+  
+  "validation_criteria": {
+    "semantic_chunking": {
+      "chunk_size_within_range": true,
+      "similarity_threshold_respected": true,
+      "embeddings_generated": true,
+      "breakpoint_detection": true
+    },
+    "fixed_size_chunking": {
+      "chunk_size_consistent": true,
+      "overlap_correct": true,
+      "separators_respected": true,
+      "whitespace_handled": true
+    },
+    "ragas_evaluation": {
+      "metrics_calculated": true,
+      "thresholds_met": true,
+      "reproducible_results": true,
+      "configuration_complete": true
+    }
+  }
+}

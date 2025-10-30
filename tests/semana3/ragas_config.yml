@@ -1,0 +1,220 @@
+# Configuración de evaluación RAGAS para Semana 3
+# ================================================
+
+# Este archivo define la configuración para evaluar las mejoras
+# implementadas en la Semana 3 del proyecto RAG.
+
+# Configuración general
+evaluation:
+  name: "Semana 3 - Mejoras RAG"
+  description: "Evaluación de preprocesamiento, reranking y query rewriting"
+  version: "1.0"
+  
+# Configuración de métricas RAGAS
+metrics:
+  # Métricas obligatorias para Semana 3
+  faithfulness:
+    enabled: true
+    threshold: 0.7  # Umbral de alerta para alucinaciones
+    description: "Evalúa si la respuesta está fundamentada en el contexto"
+  
+  context_precision:
+    enabled: true
+    threshold: 0.6
+    description: "Mide si los fragmentos recuperados relevantes aparecen en posiciones altas"
+  
+  context_recall:
+    enabled: true
+    threshold: 0.7
+    description: "Evalúa si todos los fragmentos necesarios fueron recuperados"
+  
+  answer_relevancy:
+    enabled: true
+    threshold: 0.8
+    description: "Evalúa si la respuesta es relevante a la pregunta"
+  
+  # Métricas adicionales para Semana 3
+  answer_correctness:
+    enabled: true
+    threshold: 0.7
+    description: "Evalúa la corrección factual de la respuesta"
+  
+  answer_similarity:
+    enabled: true
+    threshold: 0.8
+    description: "Evalúa la similitud semántica con la respuesta esperada"
+
+# Configuración de escenarios de prueba
+scenarios:
+  # Escenario 1: Información que SÍ existe
+  information_exists:
+    name: "Información Disponible"
+    description: "Preguntas sobre información que está en los documentos"
+    questions:
+      - "¿Cuáles son los requisitos para participar en las convocatorias?"
+      - "¿Qué documentos necesito para postularme?"
+      - "¿Cuál es el monto máximo de financiación?"
+      - "¿Cuáles son las fechas límite de presentación?"
+    
+  # Escenario 2: Información que NO existe
+  information_not_exists:
+    name: "Información No Disponible"
+    description: "Preguntas sobre información que NO está en los documentos"
+    questions:
+      - "¿Cuál es el salario de los investigadores?"
+      - "¿Cómo se calcula el impuesto sobre la renta?"
+      - "¿Qué deportes se practican en la universidad?"
+      - "¿Cuál es el clima en Bogotá?"
+
+# Configuración de funcionalidades a evaluar
+features:
+  # Preprocesamiento de documentos
+  preprocessing:
+    enabled: true
+    description: "Evaluar impacto del preprocesamiento con markitdown"
+    tests:
+      - name: "Sin preprocesamiento"
+        config:
+          use_preprocessing: false
+      - name: "Con preprocesamiento"
+        config:
+          use_preprocessing: true
+  
+  # Reranking de documentos
+  reranking:
+    enabled: true
+    description: "Evaluar impacto del reranking en la relevancia"
+    tests:
+      - name: "Sin reranking"
+        config:
+          use_reranking: false
+      - name: "Con reranking"
+        config:
+          use_reranking: true
+  
+  # Reescritura de consultas
+  query_rewriting:
+    enabled: true
+    description: "Evaluar impacto de la reescritura de consultas"
+    tests:
+      - name: "Sin query rewriting"
+        config:
+          use_query_rewriting: false
+      - name: "Con query rewriting"
+        config:
+          use_query_rewriting: true
+
+# Configuración de comparaciones
+comparisons:
+  # Comparación Semana 2 vs Semana 3
+  semana2_vs_semana3:
+    enabled: true
+    description: "Comparar resultados entre Semana 2 y Semana 3"
+    baseline:
+      name: "Semana 2"
+      config:
+        use_preprocessing: false
+        use_reranking: false
+        use_query_rewriting: false
+    improved:
+      name: "Semana 3"
+      config:
+        use_preprocessing: true
+        use_reranking: true
+        use_query_rewriting: true
+  
+  # Comparación individual de funcionalidades
+  individual_features:
+    enabled: true
+    description: "Evaluar impacto individual de cada funcionalidad"
+    tests:
+      - name: "Solo preprocesamiento"
+        config:
+          use_preprocessing: true
+          use_reranking: false
+          use_query_rewriting: false
+      - name: "Solo reranking"
+        config:
+          use_preprocessing: false
+          use_reranking: true
+          use_query_rewriting: false
+      - name: "Solo query rewriting"
+        config:
+          use_preprocessing: false
+          use_reranking: false
+          use_query_rewriting: true
+
+# Configuración de alertas
+alerts:
+  # Alertas por métricas preocupantes
+  faithfulness_low:
+    metric: "faithfulness"
+    threshold: 0.7
+    message: "⚠️ Faithfulness bajo - posible alucinación detectada"
+    action: "Revisar prompts y contexto recuperado"
+  
+  context_precision_low:
+    metric: "context_precision"
+    threshold: 0.6
+    message: "⚠️ Context Precision bajo - fragmentos poco relevantes"
+    action: "Mejorar estrategia de chunking o reranking"
+  
+  context_recall_low:
+    metric: "context_recall"
+    threshold: 0.7
+    message: "⚠️ Context Recall bajo - información faltante"
+    action: "Aumentar top_k o mejorar embeddings"
+
+# Configuración de reportes
+reports:
+  # Generar reporte comparativo
+  comparative_report:
+    enabled: true
+    format: "html"
+    include_charts: true
+    include_details: true
+  
+  # Generar reporte individual
+  individual_report:
+    enabled: true
+    format: "json"
+    include_metrics: true
+    include_examples: true
+  
+  # Generar reporte de reflexión
+  reflection_report:
+    enabled: true
+    format: "markdown"
+    include_analysis: true
+    include_recommendations: true
+
+# Configuración de datos de prueba
+test_data:
+  # Colección de documentos
+  collection: "convocatorias_minciencias"
+  
+  # Preguntas de prueba
+  questions_file: "sample_questions.json"
+  
+  # Casos reproducibles
+  reproducible_cases: "reproducible_cases.json"
+  
+  # Configuración de chunking
+  chunking_config: "valid_chunking_config.json"
+
+# Configuración de ejecución
+execution:
+  # Número de ejecuciones por configuración
+  runs_per_config: 3
+  
+  # Tiempo límite por ejecución (segundos)
+  timeout_per_run: 300
+  
+  # Paralelización
+  parallel_execution: false
+  max_workers: 1
+  
+  # Logging
+  log_level: "INFO"
+  save_logs: true
+  log_file: "semana3_evaluation.log"

@@ -1,0 +1,106 @@
+[
+    {
+        "source_url": "{{valid_url}}",
+        "collection_name": "{{collection_name}}",
+        "chunking_config": {
+            "chunk_size": 1000,
+            "chunk_overlap": 200,
+            "chunking_strategy": "recursive_character"
+        },
+        "processing_options": {
+            "max_file_size_mb": 50,
+            "timeout_per_file_seconds": 300
+        },
+        "embedding_config": {
+            "model": "embedding-001",
+            "batch_size": 90,
+            "retry_attempts": 3
+        }
+    },
+    {
+        "source_url": "{{valid_url}}",
+        "collection_name": "{{collection_name}}",
+        "chunking_config": {
+            "chunking_strategy": "semantic",
+            "breakpoint_threshold_type": "percentile",
+            "breakpoint_threshold_amount": 95,
+            "semantic_embeddings_model": "models/embedding-001",
+            "semantic_similarity_threshold": 0.7,
+            "semantic_min_chunk_size": 200,
+            "semantic_max_chunk_size": 2000
+        },
+        "processing_options": {
+            "max_file_size_mb": 50,
+            "timeout_per_file_seconds": 300
+        },
+        "embedding_config": {
+            "model": "embedding-001",
+            "batch_size": 90,
+            "retry_attempts": 3,
+            "embedding_dimensions": 768,
+            "similarity_metric": "cosine"
+        }
+    },
+    {
+        "source_url": "{{valid_url}}",
+        "collection_name": "{{collection_name}}",
+        "chunking_config": {
+            "chunk_size": 800,
+            "chunk_overlap": 150,
+            "chunking_strategy": "fixed_size",
+            "fixed_size_separators": ["\n\n", "\n", " ", ""],
+            "fixed_size_keep_separator": true,
+            "fixed_size_strip_whitespace": true,
+            "fixed_size_length_function": "character_count",
+            "fixed_size_min_chunk_size": 100,
+            "fixed_size_max_chunk_size": 1200
+        },
+        "processing_options": {
+            "max_file_size_mb": 50,
+            "timeout_per_file_seconds": 300
+        },
+        "embedding_config": {
+            "model": "embedding-001",
+            "batch_size": 90,
+            "retry_attempts": 3,
+            "embedding_dimensions": 768,
+            "similarity_metric": "cosine"
+        }
+    },
+    {
+        "source_url": "{{valid_url}}",
+        "collection_name": "{{collection_name}}",
+        "chunking_config": {
+            "chunk_size": 1200,
+            "chunk_overlap": 250,
+            "chunking_strategy": "document_structure"
+        },
+        "processing_options": {
+            "max_file_size_mb": 50,
+            "timeout_per_file_seconds": 300
+        },
+        "embedding_config": {
+            "model": "embedding-001",
+            "batch_size": 90,
+            "retry_attempts": 3
+        }
+    },
+    {
+        "source_url": "{{valid_url}}",
+        "collection_name": "{{collection_name}}",
+        "chunking_config": {
+            "chunk_size": 1500,
+            "chunk_overlap": 300,
+            "chunking_strategy": "linguistic_units"
+        },
+        "processing_options": {
+            "max_file_size_mb": 50,
+            "timeout_per_file_seconds": 300
+        },
+        "embedding_config": {
+            "model": "embedding-001",
+            "batch_size": 90,
+            "retry_attempts": 3
+        }
+    }
+]
