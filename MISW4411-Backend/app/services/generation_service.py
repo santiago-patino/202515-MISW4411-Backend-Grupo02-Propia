@@ -20,6 +20,7 @@ TUTORIALES:
 """
 
 import time
+import re
 from typing import Dict, Any, List
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
@@ -46,8 +47,8 @@ class GenerationService:
     def __init__(
         self, 
         model: str = "gemini-2.5-flash",
-        temperature: float = 0.1,
-        max_tokens: int = 200,
+        temperature: float = 0.7,
+        max_tokens: int = 1024,
         use_local: bool = False
     ):
         """
@@ -88,36 +89,21 @@ class GenerationService:
                     max_output_tokens=max_tokens
                 )
                 
-                # Probar con una consulta simple para verificar cuota
-                print("🧪 Probando cuota de Google AI para generación...")
-                test_prompt = ChatPromptTemplate.from_template("Responde: ¿Qué es 2+2?")
-                test_messages = test_prompt.invoke({"question": "¿Qué es 2+2?"})
-                test_response = self.llm.invoke(test_messages)
-                print(f"✅ Google AI funcionando: {len(test_response.content)} caracteres")
+                print("✅ Google AI inicializado correctamente")
                 
-                # Verificar si la respuesta está vacía (indicador de cuota excedida)
-                if not test_response.content or len(test_response.content.strip()) == 0:
-                    print("⚠️ Google AI devuelve respuesta vacía - cuota excedida")
-                    raise RuntimeError("Google AI quota exceeded - empty response")
-                
-                # Crear prompt template para RAG
-                self.prompt = ChatPromptTemplate.from_template("""
-Eres un asistente especializado en responder preguntas basándote únicamente en el contexto proporcionado.
-
-CONTEXTO:
-{context}
-
-PREGUNTA: {question}
-
-INSTRUCCIONES:
-1. Responde la pregunta usando SOLO la información del contexto proporcionado
-2. Si el contexto no contiene información suficiente para responder, di claramente "No tengo información suficiente en los documentos para responder esta pregunta"
-3. Mantén tu respuesta concisa y directa
-4. Si mencionas información específica, indica de qué documento proviene
-5. No inventes información que no esté en el contexto
-
-RESPUESTA:
-""")
+                # Crear prompt template para RAG - texto plano sin saltos de línea
+                self.prompt = ChatPromptTemplate.from_template(
+                    "Eres un asistente especializado en responder preguntas basándote únicamente en el contexto proporcionado. "
+                    "CONTEXTO: {context} "
+                    "PREGUNTA: {question} "
+                    "INSTRUCCIONES: "
+                    "1. Responde la pregunta usando SOLO la información del contexto proporcionado. "
+                    "2. Si el contexto no contiene información suficiente para responder, di claramente: No tengo información suficiente en los documentos para responder esta pregunta. "
+                    "3. Mantén tu respuesta concisa y directa. "
+                    "4. Si mencionas información específica, indica de qué documento proviene. "
+                    "5. No inventes información que no esté en el contexto. "
+                    "RESPUESTA:"
+                )
                 
             except Exception as e:
                 error_msg = str(e)
@@ -168,7 +154,7 @@ RESPUESTA:
             print(f"🤖 Generando respuesta para: '{question[:50]}...'")
             print(f"📚 Contexto disponible: {len(retrieved_docs)} documentos")
             
-            # Preparar contexto concatenando documentos
+            # Preparar contexto concatenando documentos como texto plano sin saltos de línea
             context_parts = []
             sources = set()
             
@@ -176,11 +162,34 @@ RESPUESTA:
                 source_file = doc.metadata.get('source_file', f'documento_{i+1}')
                 sources.add(source_file)
                 
-                # Formatear cada documento con su fuente
-                context_part = f"--- Documento {i+1} ({source_file}) ---\n{doc.page_content}\n"
+                # Limpiar el contenido del documento: texto plano sin caracteres especiales problemáticos
+                doc_content = doc.page_content
+                
+                # Reemplazar comillas dobles y simples que podrían interferir con el prompt
+                doc_content = doc_content.replace('"', "'").replace('"""', "'''")
+                
+                # Normalizar saltos de línea primero
+                doc_content = doc_content.replace('\r\n', ' ').replace('\r', ' ').replace('\n', ' ')
+                
+                # Reemplazar múltiples espacios en blanco por un solo espacio
+                doc_content = re.sub(r'\s+', ' ', doc_content)
+                
+                # Eliminar caracteres de control
+                doc_content = re.sub(r'[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f-\x9f]', '', doc_content)
+                
+                # Formatear cada documento con su fuente (texto plano sin saltos de línea)
+                context_part = f"Documento {i+1} - {source_file}: {doc_content}"
                 context_parts.append(context_part)
             
-            context = "\n".join(context_parts)
+            # Unir contexto como texto plano simple sin saltos de línea
+            context = ". ".join(context_parts)
+            
+            # Limpiar el contexto final de caracteres problemáticos adicionales
+            context = context.strip()
+            
+            # Reemplazar cualquier salto de línea restante por espacios
+            context = context.replace('\n', ' ').replace('\r', ' ')
+            context = re.sub(r'\s+', ' ', context)
             
             print(f"📄 Archivos consultados: {list(sources)}")
             print(f"📝 Tamaño del contexto: {len(context)} caracteres")
@@ -192,35 +201,68 @@ RESPUESTA:
             else:
                 # Usar Google AI
                 try:
-                    # Construir mensaje con el prompt
-                    messages = self.prompt.invoke({
-                        "question": question,
-                        "context": context
-                    })
+                    # Construir el mensaje completo como texto plano (igual que funciona en Postman)
+                    full_message = (
+                        "Eres un asistente especializado en responder preguntas basándote únicamente en el contexto proporcionado. "
+                        f"CONTEXTO: {context} "
+                        f"PREGUNTA: {question} "
+                        "INSTRUCCIONES: "
+                        "1. Responde la pregunta usando SOLO la información del contexto proporcionado. "
+                        "2. Si el contexto no contiene información suficiente para responder, di claramente: No tengo información suficiente en los documentos para responder esta pregunta. "
+                        "3. Mantén tu respuesta concisa y directa. "
+                        "4. Si mencionas información específica, indica de qué documento proviene. "
+                        "5. No inventes información que no esté en el contexto. "
+                        "RESPUESTA:"
+                    )
                     
-                    # Generar respuesta con el LLM
-                    response = self.llm.invoke(messages)
+                    # Asegurar que no haya saltos de línea
+                    full_message = full_message.replace('\r\n', ' ').replace('\r', ' ').replace('\n', ' ')
+                    full_message = re.sub(r'\s+', ' ', full_message).strip()
                     
-                    # Extraer texto de la respuesta
-                    answer = response.content if hasattr(response, 'content') else str(response)
+                    # print(f"CONTENIDO ENVIADO A LA IA (texto plano sin saltos de línea): {full_message}")
                     
-                    # Verificar si la respuesta está vacía (cuota excedida)
-                    if not answer or len(answer.strip()) == 0:
-                        print("⚠️ Google AI devuelve respuesta vacía - activando fallback local")
-                        # Cambiar a modelo local y usar fallback
-                        self.local_generator = LocalGenerationService()
-                        self.use_local = True
-                        return self.local_generator.generate_response(question, retrieved_docs)
+                    # Usar LangChain para enviar el mensaje
+                    from langchain_core.messages import HumanMessage
+                    message = HumanMessage(content=full_message)
                     
-                    print(f"✅ Respuesta generada: {len(answer)} caracteres")
+                    print(f"🔧 Configuración LLM: temperatura={self.llm.temperature}, max_output_tokens={self.llm.max_output_tokens}")
+                    print(f"📨 Enviando mensaje con {len(full_message)} caracteres...")
                     
-                    return {
-                        "answer": answer,
-                        "sources": list(sources),
-                        "context": retrieved_docs,
-                        "context_length": len(context),
-                        "answer_length": len(answer)
-                    }
+                    try:
+                        response = self.llm.invoke([message])
+                        
+                        # Extraer texto de la respuesta
+                        answer = response.content if hasattr(response, 'content') else str(response)
+                        
+                        print(f"📥 Respuesta recibida: tipo={type(response)}, tiene content={hasattr(response, 'content')}")
+                        if hasattr(response, 'content'):
+                            print(f"📄 Contenido respuesta: '{answer[:100] if answer else 'VACÍO'}...'")
+                        
+                        # Verificar si la respuesta está vacía (cuota excedida)
+                        if not answer or len(answer.strip()) == 0:
+                            print("⚠️ Google AI devuelve respuesta vacía")
+                            print(f"🔍 Debug - respuesta completa: {response}")
+                            print(f"🔍 Debug - respuesta type: {type(response)}")
+                            print(f"🔍 Debug - respuesta attrs: {dir(response)}")
+                            # No activar fallback automático, solo mostrar el error
+                            raise ValueError("Google AI devolvió respuesta vacía")
+                        
+                        print(f"✅ Respuesta generada: {len(answer)} caracteres")
+                        
+                        return {
+                            "answer": answer,
+                            "sources": list(sources),
+                            "context": retrieved_docs,
+                            "context_length": len(context),
+                            "answer_length": len(answer)
+                        }
+                        
+                    except Exception as invoke_error:
+                        print(f"❌ Error durante invoke: {str(invoke_error)}")
+                        print(f"🔍 Tipo de error: {type(invoke_error)}")
+                        import traceback
+                        traceback.print_exc()
+                        raise
                     
                 except Exception as e:
                     error_msg = str(e)

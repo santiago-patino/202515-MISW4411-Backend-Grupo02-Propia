@@ -59,10 +59,7 @@ class EmbeddingService:
                     task_type="retrieval_document"  # Optimizado para documentos
                 )
                 
-                # Probar con un embedding simple para verificar cuota
-                print("🧪 Probando cuota de Google AI...")
-                test_embedding = self.embeddings_model.embed_query("test")
-                print(f"✅ Google AI funcionando: {len(test_embedding)} dimensiones")
+                print("✅ Google AI embeddings inicializado correctamente")
                 
             except Exception as e:
                 error_msg = str(e)

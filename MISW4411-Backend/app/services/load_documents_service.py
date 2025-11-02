@@ -229,10 +229,24 @@ async def download_and_process_documents(
                 if payload and hasattr(payload, 'embedding_config') and payload.embedding_config:
                     # Si el usuario especifica un modelo en embedding_config, usarlo
                     if hasattr(payload.embedding_config, 'model') and payload.embedding_config.model:
-                        # Mapear modelos comunes a formato de Google
-                        if "embedding" in payload.embedding_config.model.lower():
-                            embedding_model = f"models/{payload.embedding_config.model}"
+                        user_model = payload.embedding_config.model.strip()
+                        
+                        # Lista de modelos válidos de Google AI
+                        valid_google_models = ["embedding-001", "embedding-002", "models/embedding-001", "models/embedding-002"]
+                        
+                        # Verificar si el modelo ya está en formato "models/embedding-XXX"
+                        if user_model.startswith("models/"):
+                            if user_model in valid_google_models:
+                                embedding_model = user_model
+                            else:
+                                logger.warning(f"Modelo de Google AI no válido: {user_model}. Usando default: models/embedding-001")
+                                embedding_model = "models/embedding-001"
+                        # Verificar si es un modelo válido sin el prefijo "models/"
+                        elif user_model in ["embedding-001", "embedding-002"]:
+                            embedding_model = f"models/{user_model}"
+                        # Rechazar modelos que no sean de Google AI (ej: text-embedding-ada-002 de OpenAI)
                         else:
+                            logger.warning(f"Modelo no válido para Google AI: {user_model}. Usando default: models/embedding-001")
                             embedding_model = "models/embedding-001"
                     
                     # Leer batch_size desde el payload

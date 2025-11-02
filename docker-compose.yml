@@ -1,0 +1,52 @@
+networks:
+  rag-misw:
+    driver: bridge
+
+services:
+  backend:
+    build:
+      context: ./MISW4411-Backend
+    image: misw4411-backend-img
+    ports:
+      - "8000:8000"
+    networks:
+      - rag-misw
+    restart: unless-stopped
+    environment:
+      - GIT_PYTHON_REFRESH=quiet
+      - TRANSFORMERS_CACHE=/app/.cache/huggingface
+      - HF_HOME=/app/.cache/huggingface
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+    volumes:
+      # Documentos descargados - persistir fuera del contenedor
+      - ./MISW4411-Backend/docs:/app/docs
+      # # Logs de procesamiento - persistir fuera del contenedor
+      - ./MISW4411-Backend/logs:/app/logs
+      # # Base de datos vectorial ChromaDB - persistir fuera del contenedor
+      - ./MISW4411-Backend/chroma_db:/app/chroma_db
+      # # Cache de modelos de HuggingFace - persistir fuera del contenedor
+      - ./MISW4411-Backend/.cache:/app/.cache
+
+  frontend:
+    build:
+      context: ./MISW4411-Frontend-Template
+    image: misw4411-frontend-img
+    ports:
+      - "3000:3000"
+    networks:
+      - rag-misw
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  proxy:
+    image: nginx:1.25-alpine
+    ports:
+      - "80:80"
+    networks:
+      - rag-misw
+    depends_on:
+      - frontend
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped
