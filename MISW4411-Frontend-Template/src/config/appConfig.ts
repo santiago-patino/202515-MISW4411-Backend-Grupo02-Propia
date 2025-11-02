@@ -25,8 +25,14 @@ export const APP_CONFIG = {
   INPUT_PLACEHOLDER: "Escribe tu pregunta sobre el curso MISW4411...",
   
   // ========== CONFIGURACIÓN DEL BACKEND ==========
-  // URL del backend (los estudiantes cambiarán esto por su servidor)
-  BACKEND_URL: "http://127.0.0.1:8000",
+  // URL del backend - usa automáticamente el mismo host actual con puerto 8000
+  BACKEND_URL: (() => {
+    if (typeof window === 'undefined') return "http://127.0.0.1:8000";
+    // Usar el mismo host/protocolo actual pero con puerto 8000
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    return `${protocol}//${hostname}:8000`;
+  })(),
   
   // Endpoint de la API
   API_ENDPOINT: "/api/v1/ask",
@@ -68,6 +74,13 @@ export const getFullTitle = (): string => {
   }
   
   return title;
+};
+
+/**
+ * Obtiene la URL base del backend (sin endpoints)
+ */
+export const getBaseUrl = (): string => {
+  return APP_CONFIG.BACKEND_URL;
 };
 
 /**

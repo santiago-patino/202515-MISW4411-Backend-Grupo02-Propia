@@ -11,6 +11,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useNotifications } from '../contexts/NotificationContext';
+import { getBaseUrl } from '../config/appConfig';
 
 // Tipos de estrategias de chunking
 type ChunkingStrategy = "recursive_character" | "fixed_size" | "semantic" | "document_structure" | "linguistic_units";
@@ -29,7 +30,9 @@ type ChunkingStrategy = "recursive_character" | "fixed_size" | "semantic" | "doc
  * @param baseUrl - URL base del backend (por defecto: http://localhost:8000)
  * @returns JSX.Element
  */
-export default function URLUploader({ baseUrl = "http://localhost:8000" }: URLUploaderProps) {
+export default function URLUploader({ baseUrl }: URLUploaderProps) {
+  // Usar baseUrl proporcionado o la configuración automática
+  const finalBaseUrl = baseUrl || getBaseUrl();
   const { addNotification, updateNotification } = useNotifications();
   
   // Referencias para mantener valores actualizados en el polling
@@ -162,7 +165,7 @@ export default function URLUploader({ baseUrl = "http://localhost:8000" }: URLUp
     };
 
     try {
-      const res = await fetch(`${baseUrl}/api/v1/documents/load-from-url`, {
+      const res = await fetch(`${finalBaseUrl}/api/v1/documents/load-from-url`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -209,7 +212,7 @@ export default function URLUploader({ baseUrl = "http://localhost:8000" }: URLUp
     
     const executePolling = async () => {
       try {
-        const res = await fetch(`${baseUrl}/api/v1/documents/load-from-url/${processingId}`);
+        const res = await fetch(`${finalBaseUrl}/api/v1/documents/load-from-url/${processingId}`);
         const data = await res.json();
         const notificationId = localStorage.getItem(`notification_id_${processingId}`);
         
