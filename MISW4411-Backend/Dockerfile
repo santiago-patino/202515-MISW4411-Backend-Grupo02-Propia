@@ -48,7 +48,7 @@ COPY --from=builder /app/wheels /wheels/
 COPY --from=builder /app/requirements.txt .
 
 # Instala las dependencias desde los wheels locales sin necesidad de compilación
-RUN pip install --no-cache /wheels/*
+RUN pip install --no-cache-dir /wheels/*
 
 # Copia el código fuente de la aplicación
 COPY ./app ./app
