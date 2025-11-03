@@ -13,6 +13,9 @@ WORKDIR /app
 # Copia solo el archivo de requerimientos para aprovechar el cache de Docker
 COPY requirements.txt .
 
+# Actualizamos pip
+RUN python -m pip install --upgrade pip
+
 # Instala las dependencias en una ubicación que será copiada a la etapa final
 # Se implementa un reintento para mitigar problemas de red con paquetes grandes
 RUN for i in 1 2 3; do \
