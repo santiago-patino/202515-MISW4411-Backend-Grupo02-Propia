@@ -21,14 +21,17 @@ TUTORIALES:
 
 import time
 import re
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
+from datetime import datetime
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain.schema import Document
+from langchain_core.tools import Tool
 from ragas import evaluate
 from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
 from datasets import Dataset
 from app.services.generation_service_local import LocalGenerationService
+from app.services.mcp_integration_service import MCPIntegrationService
 
 
 class GenerationService:
@@ -72,6 +75,8 @@ class GenerationService:
         """
         self.model_name = model
         self.use_local = use_local
+        self.mcp_service = MCPIntegrationService()
+        self.chat_history = []  # Historial de conversación
         
         if use_local:
             # Usar modelo local directamente
@@ -102,6 +107,7 @@ class GenerationService:
                     "3. Mantén tu respuesta concisa y directa. "
                     "4. Si mencionas información específica, indica de qué documento proviene. "
                     "5. No inventes información que no esté en el contexto. "
+                    "6. Si el usuario solicita enviar el historial por correo, debes usar la herramienta send_chat_history_email. Primero pregunta el correo del destinatario si no lo proporciona. "
                     "RESPUESTA:"
                 )
                 
@@ -125,7 +131,8 @@ class GenerationService:
     def generate_response(
         self, 
         question: str, 
-        retrieved_docs: List[Document]
+        retrieved_docs: List[Document],
+        chat_history: Optional[List[Dict[str, Any]]] = None
     ) -> Dict[str, Any]:
         """
         Genera una respuesta usando el contexto recuperado.
@@ -146,6 +153,7 @@ class GenerationService:
         Args:
             question: Pregunta del usuario
             retrieved_docs: Documentos recuperados del vector store
+            chat_history: Historial de conversación (opcional)
             
         Returns:
             Dict con answer, sources y context
@@ -153,6 +161,67 @@ class GenerationService:
         try:
             print(f"🤖 Generando respuesta para: '{question[:50]}...'")
             print(f"📚 Contexto disponible: {len(retrieved_docs)} documentos")
+            
+            # Actualizar historial de conversación
+            import copy
+            if chat_history is not None:
+                self.chat_history = copy.deepcopy(chat_history)  # Copia profunda para no modificar el original
+            else:
+                # Si no hay historial, inicializar lista vacía
+                if not hasattr(self, 'chat_history') or self.chat_history is None:
+                    self.chat_history = []
+            
+            # SIEMPRE agregar la pregunta actual del usuario al historial
+            # (incluso si ya existe historial, la pregunta actual debe agregarse)
+            self.chat_history.append({
+                "role": "user",
+                "content": question,
+                "timestamp": datetime.now().isoformat()
+            })
+            
+            # Detectar si el usuario quiere enviar el historial por correo
+            question_lower = question.lower().strip()
+            
+            # Buscar email en la pregunta
+            import re
+            email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+            has_email = bool(re.search(email_pattern, question))
+            
+            # Palabras clave relacionadas con enviar historial por correo
+            email_keywords = ["enviar", "correo", "email", "historial", "conversación", "chat", "envía", "envíame"]
+            has_email_keywords = any(keyword in question_lower for keyword in email_keywords)
+            
+            # Verificar si la pregunta anterior era sobre enviar email
+            previous_was_email_request = False
+            if len(self.chat_history) > 0:
+                last_assistant_msg = None
+                for msg in reversed(self.chat_history):
+                    if msg.get("role") == "assistant":
+                        last_assistant_msg = msg.get("content", "").lower()
+                        break
+                
+                if last_assistant_msg and ("correo electrónico" in last_assistant_msg or "dirección de correo" in last_assistant_msg):
+                    previous_was_email_request = True
+            
+            # Detectar solicitud de email si:
+            # 1. Tiene palabras clave de email Y menciona correo/email
+            # 2. O tiene un email (probable respuesta a pregunta anterior)
+            # 3. O la pregunta anterior era sobre email y esta tiene un email
+            wants_email = (
+                (has_email_keywords and ("correo" in question_lower or "email" in question_lower)) or
+                (has_email and previous_was_email_request) or
+                (has_email and len(question.split()) <= 5)  # Si es muy corta y tiene email, probablemente es una respuesta
+            )
+            
+            if wants_email:
+                print("\n" + "="*80)
+                print("📧 [MCP TOOL INVOCATION] Iniciando invocación de herramienta MCP")
+                print("="*80)
+                print(f"🔧 Herramienta: send_chat_history_email")
+                print(f"📝 Pregunta del usuario: '{question}'")
+                print(f"📊 Historial disponible: {len(self.chat_history)} mensajes")
+                print("="*80 + "\n")
+                return self._handle_email_request(question, retrieved_docs)
             
             # Preparar contexto concatenando documentos como texto plano sin saltos de línea
             context_parts = []
@@ -248,6 +317,14 @@ class GenerationService:
                             raise ValueError("Google AI devolvió respuesta vacía")
                         
                         print(f"✅ Respuesta generada: {len(answer)} caracteres")
+                        
+                        # Agregar respuesta al historial
+                        self.chat_history.append({
+                            "role": "assistant",
+                            "content": answer,
+                            "timestamp": datetime.now().isoformat(),
+                            "sources": list(sources)
+                        })
                         
                         return {
                             "answer": answer,
@@ -510,3 +587,103 @@ CONSULTA REESCRITA:
         context_query = f"{question} {' '.join(context_additions)}"
         print(f"✅ Consulta con contexto: '{context_query[:50]}...'")
         return context_query
+    
+    def _handle_email_request(
+        self, 
+        question: str, 
+        retrieved_docs: List[Document]
+    ) -> Dict[str, Any]:
+        """
+        Maneja la solicitud de envío del historial por correo.
+        
+        Args:
+            question: Pregunta del usuario
+            retrieved_docs: Documentos recuperados (no usados aquí)
+            
+        Returns:
+            Dict con la respuesta sobre el envío del email
+        """
+        import re
+        
+        # Buscar email en la pregunta
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        emails_found = re.findall(email_pattern, question)
+        
+        if emails_found:
+            # Email encontrado, enviar historial
+            recipient_email = emails_found[0]
+            print("\n" + "="*80)
+            print("📧 [MCP TOOL EXECUTION] Ejecutando herramienta MCP: send_chat_history_email")
+            print("="*80)
+            print(f"📮 Email del destinatario: {recipient_email}")
+            print(f"📊 Mensajes en historial: {len(self.chat_history)}")
+            print(f"📋 Preparando historial para envío...")
+            
+            # Formatear historial para la herramienta
+            formatted_history = self.mcp_service.format_chat_history_for_tool(self.chat_history)
+            print(f"✅ Historial formateado: {len(formatted_history)} mensajes")
+            
+            # Ejecutar herramienta MCP
+            print(f"\n🔧 [MCP TOOL CALL] Llamando a send_chat_history_email con:")
+            print(f"   - recipient_email: {recipient_email}")
+            print(f"   - chat_history: {len(formatted_history)} mensajes")
+            print(f"⏳ Ejecutando herramienta...\n")
+            
+            result = self.mcp_service.execute_tool(
+                tool_name="send_chat_history_email",
+                tool_input={"recipient_email": recipient_email},
+                chat_history=formatted_history
+            )
+            
+            print("="*80)
+            print("📬 [MCP TOOL RESULT] Resultado de la ejecución de la herramienta:")
+            print("="*80)
+            print(f"✅ Success: {result.get('success', False)}")
+            if result.get("success"):
+                print(f"📧 Recipient: {result.get('recipient', 'N/A')}")
+                print(f"📨 Message: {result.get('message', 'N/A')}")
+                print(f"📊 Total messages: {result.get('total_messages', 'N/A')}")
+                print(f"📅 Sent at: {result.get('sent_at', 'N/A')}")
+            else:
+                print(f"❌ Error: {result.get('error', 'Error desconocido')}")
+            print("="*80 + "\n")
+            
+            if result.get("success"):
+                answer = f"¡Perfecto! He enviado el historial de nuestra conversación a {recipient_email}. Revisa tu bandeja de entrada (y spam si no lo ves)."
+            else:
+                error_msg = result.get("error", "Error desconocido")
+                answer = f"Lo siento, hubo un error al enviar el email: {error_msg}"
+            
+            # Agregar respuesta al historial
+            self.chat_history.append({
+                "role": "assistant",
+                "content": answer,
+                "timestamp": datetime.now().isoformat()
+            })
+            
+            return {
+                "answer": answer,
+                "sources": [],
+                "context": retrieved_docs,
+                "context_length": 0,
+                "answer_length": len(answer),
+                "tool_used": "send_chat_history_email" if result.get("success") else None
+            }
+        else:
+            # No hay email, preguntar
+            answer = "Por supuesto, puedo enviarte el historial de nuestra conversación por correo. ¿Cuál es tu dirección de correo electrónico?"
+            
+            # Agregar respuesta al historial
+            self.chat_history.append({
+                "role": "assistant",
+                "content": answer,
+                "timestamp": datetime.now().isoformat()
+            })
+            
+            return {
+                "answer": answer,
+                "sources": [],
+                "context": retrieved_docs,
+                "context_length": 0,
+                "answer_length": len(answer)
+            }

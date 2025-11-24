@@ -67,6 +67,7 @@ RUN pip install --no-cache-dir /wheels/* && \
 COPY ./app ./app
 COPY main.py .
 COPY apikey.json .
+COPY ./mcp_server ./mcp_server
 
 # Asigna la propiedad del directorio de trabajo al usuario no-root
 RUN chown -R appuser:appgroup /app
@@ -76,8 +77,8 @@ USER appuser
 
 # --- Configuración de red y ejecución ---
 # Expone el puerto en el que corre la aplicación
-EXPOSE 8000
+EXPOSE 8001
 
 # Comando para iniciar el servidor de producción
 # Uvicorn es iniciado para escuchar en todas las interfaces de red
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]

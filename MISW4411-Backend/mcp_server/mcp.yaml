@@ -1,0 +1,63 @@
+name: chat-history-email
+description: Servidor MCP para envío de historial de chat por correo electrónico
+version: "1.0.0"
+
+tools:
+  - name: send_chat_history_email
+    description: Envía el historial completo del chat por correo electrónico al destinatario especificado
+    requestSchema:
+      type: object
+      properties:
+        recipient_email:
+          type: string
+          description: "Email del destinatario donde se enviará el historial"
+          format: email
+        chat_history:
+          type: array
+          description: "Lista de mensajes del chat. Cada mensaje debe tener role (user/assistant) y content"
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum: ["user", "assistant"]
+              content:
+                type: string
+            required:
+              - role
+              - content
+      required:
+        - recipient_email
+        - chat_history
+    responseSchema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: "Indica si el envío del email fue exitoso"
+        recipient:
+          type: string
+          description: "Email del destinatario"
+        message:
+          type: string
+          description: "Mensaje descriptivo del resultado"
+        sent_at:
+          type: string
+          description: "Timestamp ISO del momento en que se envió el email (solo si success=true)"
+          format: date-time
+        total_messages:
+          type: integer
+          description: "Número total de mensajes incluidos en el historial (solo si success=true)"
+        format:
+          type: string
+          description: "Formato del email enviado, siempre 'html' (solo si success=true)"
+          enum: ["html"]
+        subject:
+          type: string
+          description: "Asunto del email enviado (solo si success=true)"
+        error:
+          type: string
+          description: "Mensaje de error en caso de fallo (solo si success=false)"
+      required:
+        - success
+

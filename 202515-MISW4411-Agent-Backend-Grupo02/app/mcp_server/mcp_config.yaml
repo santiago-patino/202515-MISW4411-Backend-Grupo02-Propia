@@ -1,0 +1,50 @@
+# Configuración de Servidores MCP
+# ================================
+# Este archivo define la configuración de los servidores MCP
+# para su uso con herramientas de desarrollo y validación
+
+servers:
+  rag_server:
+    name: "rag-server"
+    description: "Servidor MCP para consultar el sistema RAG externo"
+    command: "uv"
+    args: ["run", "/app/mcp_server/rag_server.py"]
+    transport: "stdio"
+    tools:
+      - name: "ask"
+        description: "Consulta el sistema RAG externo para recuperar contexto relevante"
+        parameters:
+          query:
+            type: "string"
+            description: "La pregunta del usuario que se enviará al RAG"
+            required: true
+    configuration:
+      RAG_BASE_URL:
+        type: "string"
+        description: "URL base del sistema RAG externo"
+        default: "http://host.docker.internal:8000"
+      RAG_COLLECTION:
+        type: "string"
+        description: "Nombre de la colección en el RAG"
+        default: "test_collection"
+      RAG_TOP_K:
+        type: "integer"
+        description: "Número de resultados a recuperar"
+        default: 5
+
+  custom_server:
+    name: "custom-server"
+    description: "Servidor MCP para herramientas personalizadas del agente especializado"
+    command: "uv"
+    args: ["run", "/app/mcp_server/custom_server.py"]
+    transport: "stdio"
+    tools: []
+    # Las herramientas se definen dinámicamente en custom_server.py
+    configuration: {}
+
+# Configuración global
+global:
+  timeout: 30
+  retry_attempts: 3
+  encoding: "utf-8"
+
