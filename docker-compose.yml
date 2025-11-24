@@ -60,7 +60,7 @@ services:
       context: ./202515-MISW4411-Agent-Frontend-Template
       args:
         # Para desarrollo local, usar localhost. Para producción en GCP, usar la IP externa o dominio
-        - VITE_BACKEND_URL=${VITE_BACKEND_URL:-http://localhost:8000}
+        - VITE_BACKEND_URL=http://35.208.246.124:8000
     image: misw4411-frontend-img
     container_name: misw4411-frontend
     ports:
