@@ -42,6 +42,7 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:8001",
     "http://127.0.0.1:8001",
+    "http://35.208.246.124:3000",
 ]
 
 # ==================== CONFIGURACIÓN DE MIDDLEWARE ====================
