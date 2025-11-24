@@ -31,6 +31,7 @@ app.add_middleware(
         "http://localhost:3000",  # Frontend local
         "http://127.0.0.1:3000",  # Alternativa localhost
         "http://frontend:3000",   # Frontend desde contenedor docker
+        "http://35.208.246.124:3000",
         # Para producción en GCP, agregar aquí la IP o dominio de la VM
     ],
     allow_credentials=True,
