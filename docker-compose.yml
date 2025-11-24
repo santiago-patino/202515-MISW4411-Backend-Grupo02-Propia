@@ -50,6 +50,8 @@ services:
       - LC_ALL=C.UTF-8
       - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
       - RAG_BASE_URL=http://backend:8001
+      - GMAIL_USER=${GMAIL_USER:-}
+      - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD:-}
 
   # Frontend - Puerto 3000
   frontend:
