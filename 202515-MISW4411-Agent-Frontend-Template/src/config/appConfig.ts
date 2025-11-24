@@ -37,7 +37,7 @@ export const APP_CONFIG = {
   // ========== CONFIGURACIÓN DEL BACKEND ==========
   // URL del backend (Docker container en localhost:8000)
   // Se puede sobrescribir con la variable de entorno VITE_BACKEND_URL
-  BACKEND_URL: import.meta.env.VITE_BACKEND_URL || "http://localhost:8000",
+  BACKEND_URL: import.meta.env.VITE_BACKEND_URL || "http://35.208.246.124:8000",
   
   // Endpoints de la API
   RAG_ENDPOINT: "/ask_rag",
