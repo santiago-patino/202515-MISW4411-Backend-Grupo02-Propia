@@ -9,6 +9,7 @@ services:
       context: ./MISW4411-Backend
     image: misw4411-backend-img
     container_name: misw4411-backend
+    user: "1000:1000"
     ports:
       - "8001:8001"
     networks:
