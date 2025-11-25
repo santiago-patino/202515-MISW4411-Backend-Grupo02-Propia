@@ -76,7 +76,7 @@ const Footer: React.FC = () => {
     <footer 
       className="relative overflow-hidden transition-all duration-300"
       style={{ 
-        background: '#342276',
+        background: '#306238',
         color: 'white'
       }}
     >

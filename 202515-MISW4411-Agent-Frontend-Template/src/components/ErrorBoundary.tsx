@@ -84,14 +84,14 @@ class ErrorBoundary extends Component<Props, State> {
               <button
                 onClick={this.handleReload}
                 className="w-full px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 inline-flex items-center justify-center"
-                style={{ backgroundColor: '#342276' }}
+                style={{ backgroundColor: '#306238' }}
                 onMouseEnter={(e) => {
                   const target = e.target as HTMLButtonElement;
-                  target.style.backgroundColor = '#2d1d65';
+                  target.style.backgroundColor = '#2a5630';
                 }}
                 onMouseLeave={(e) => {
                   const target = e.target as HTMLButtonElement;
-                  target.style.backgroundColor = '#342276';
+                  target.style.backgroundColor = '#306238';
                 }}
               >
                 <RefreshCw className="w-5 h-5 mr-2" />

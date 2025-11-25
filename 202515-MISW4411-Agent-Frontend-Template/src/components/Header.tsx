@@ -40,7 +40,7 @@ const Header = ({ tab, setTab }: HeaderProps) => {
       animate={{ y: 0 }}
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
-        backgroundColor: '#342276',
+        backgroundColor: '#306238',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
       }}
     >
@@ -48,11 +48,14 @@ const Header = ({ tab, setTab }: HeaderProps) => {
         <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo Izquierdo */}
           <div className="flex items-center gap-4">
+            <div style={{ background: 'white', borderRadius: '50%' }}>
+
             <img 
-              src="/assets/MisoLogo.png" 
-              alt="MISO Logo" 
+              src="/assets/MinCienciasLogo.png" 
+              alt="MinCiencias Logo" 
               className="h-12 md:h-14 lg:h-16 object-contain"
             />
+            </div>
 
             {/* Botones de tabs */}
             <nav className="flex gap-2">
@@ -62,8 +65,8 @@ const Header = ({ tab, setTab }: HeaderProps) => {
                   onClick={() => setTab('rag')}
                   className={`px-3 py-1.5 rounded text-sm font-medium ${
                     tab === 'rag'
-                      ? 'bg-white text-[#342276]'
-                      : 'bg-[#2d1d65] text-white hover:bg-[#261854]'
+                      ? 'bg-white text-[#306238]'
+                      : 'bg-[#2a5630] text-white hover:bg-[#25502a]'
                   }`}
                 >
                   Agente RAG
@@ -85,8 +88,8 @@ const Header = ({ tab, setTab }: HeaderProps) => {
                   onClick={() => setTab('specialized')}
                   className={`px-3 py-1.5 rounded text-sm font-medium ${
                     tab === 'specialized'
-                      ? 'bg-white text-[#342276]'
-                      : 'bg-[#2d1d65] text-white hover:bg-[#261854]'
+                      ? 'bg-white text-[#306238]'
+                      : 'bg-[#2a5630] text-white hover:bg-[#25502a]'
                   }`}
                 >
                   Agente Especializado

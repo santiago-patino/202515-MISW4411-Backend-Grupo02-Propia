@@ -150,9 +150,26 @@ export default function ChatRAG() {
       <div className="pt-10 lg:pt-10 pb-8">
         {/* Título principal de la aplicación */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4" style={{ color: '#342276' }}>
-            {getFullTitle()}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" style={{ color: '#306238' }}>
+            {APP_CONFIG.PROJECT_NAME}
           </h1>
+          
+          {/* Información del grupo y participantes */}
+          {(APP_CONFIG.GROUP_NUMBER || APP_CONFIG.STUDENT_NAMES) && (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-4 text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
+              {APP_CONFIG.GROUP_NUMBER && (
+                <span className="px-3 py-1 rounded-full bg-gray-100 font-medium">
+                  {APP_CONFIG.GROUP_NUMBER}
+                </span>
+              )}
+              {APP_CONFIG.STUDENT_NAMES && (
+                <span className="text-gray-600">
+                  {APP_CONFIG.STUDENT_NAMES}
+                </span>
+              )}
+            </div>
+          )}
+          
           <p className="text-lg md:text-xl" style={{ color: 'var(--text-secondary)' }}>
             {APP_CONFIG.DESCRIPTION}
           </p>
@@ -208,15 +225,15 @@ export default function ChatRAG() {
                   disabled={loading || !msg.trim()}
                   className="px-8 py-3 text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 text-lg"
                   style={{
-                    backgroundColor: '#342276'
+                    backgroundColor: '#306238'
                   }}
                   onMouseEnter={(e) => {
                     const target = e.target as HTMLButtonElement;
-                    target.style.backgroundColor = '#2d1d65';
+                    target.style.backgroundColor = '#2a5630';
                   }}
                   onMouseLeave={(e) => {
                     const target = e.target as HTMLButtonElement;
-                    target.style.backgroundColor = '#342276';
+                    target.style.backgroundColor = '#306238';
                   }}
                 >
                   {loading ? "Enviando…" : "Enviar"}
@@ -239,7 +256,7 @@ function MessageBubble({ role, text }: { role: ChatMessage['role']; text: string
       {!isUser && (
         <div 
           className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0"
-          style={{ backgroundColor: '#342276' }}
+          style={{ backgroundColor: '#306238' }}
         >
           🤖
         </div>
@@ -251,7 +268,7 @@ function MessageBubble({ role, text }: { role: ChatMessage['role']; text: string
           ? "text-white" 
           : "bg-white border border-gray-200 text-gray-800"
       }`}
-      style={isUser ? { backgroundColor: '#342276' } : {}}
+      style={isUser ? { backgroundColor: '#306238' } : {}}
       >
         {isUser ? (
           <span className="text-sm">{text}</span>

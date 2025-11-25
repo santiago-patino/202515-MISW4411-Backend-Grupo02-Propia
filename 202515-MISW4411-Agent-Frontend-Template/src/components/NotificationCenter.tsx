@@ -136,7 +136,7 @@ const NotificationCenter: React.FC = () => {
           {/* Panel */}
           <div className="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200" style={{ backgroundColor: '#342276' }}>
+            <div className="flex items-center justify-between p-4 border-b border-gray-200" style={{ backgroundColor: '#306238' }}>
               <h3 className="text-lg font-semibold text-white">Notificaciones</h3>
               <div className="flex items-center gap-2">
                 {hasNotifications && (

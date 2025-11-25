@@ -24,9 +24,9 @@ import { NotificationProvider } from './contexts/NotificationContext'
  * Define la información base que se muestra en motores de búsqueda y compartir en redes
  */
 const INSTITUTIONAL_META = {
-  TITLE: "Construcción de Aplicaciones con LLM - MISO Uniandes",
-  DESCRIPTION: "Proyecto del curso de Construcción de Aplicaciones basadas en Grandes Modelos de Lenguaje - Maestría en Ingeniería de Software, Universidad de los Andes",
-  KEYWORDS: "LLM, grandes modelos de lenguaje, inteligencia artificial, MISO, Universidad de los Andes, ingeniería de software, AI, machine learning",
+  TITLE: "Asistente de Convocatorias MinCiencias - MISO Uniandes",
+  DESCRIPTION: "Sistema inteligente para consultar información sobre convocatorias, requisitos y oportunidades del Ministerio de Ciencia, Tecnología e Innovación de Colombia",
+  KEYWORDS: "MinCiencias, convocatorias, ciencia, tecnología, innovación, Colombia, becas, financiación, investigación, MISO, Universidad de los Andes, LLM, inteligencia artificial",
   AUTHOR: "MISO - Universidad de los Andes",
   OG_URL: "https://uniandes.edu.co"
 }
@@ -72,8 +72,8 @@ function App() {
         <meta name="twitter:description" content={INSTITUTIONAL_META.DESCRIPTION} />
 
         {/* Colores del tema para navegadores */}
-        <meta name="theme-color" content="#342276" />
-        <meta name="msapplication-TileColor" content="#342276" />
+        <meta name="theme-color" content="#306238" />
+        <meta name="msapplication-TileColor" content="#306238" />
       </Helmet>
 
       {/* Proveedores de contexto y manejo de errores */}

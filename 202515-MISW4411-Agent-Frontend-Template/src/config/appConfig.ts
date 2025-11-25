@@ -6,7 +6,7 @@
 export const APP_CONFIG = {
   // ========== INFORMACIÓN DEL PROYECTO ==========
   // Cambiar por el nombre de su proyecto o grupo
-  PROJECT_NAME: "Asistente Inteligente MISW4411",
+  PROJECT_NAME: "Asistente de Convocatorias MinCiencias",
   
   // Número del grupo (opcional)
   GROUP_NUMBER: "Grupo 2", // Ejemplo: "Grupo 5" o null
@@ -15,29 +15,28 @@ export const APP_CONFIG = {
   STUDENT_NAMES: "Edna Katherine Conde Vega - Santiago Patiño Hernandez", // Ejemplo: "Seneca Uniandes - Aura Uniandes" o null
   
   // ========== DESCRIPCIÓN ==========
-  DESCRIPTION: "Pregúntame sobre el curso o temas relacionados con Grandes Modelos de Lenguaje",
+  DESCRIPTION: "Pregúntame sobre convocatorias, requisitos y oportunidades del Ministerio de Ciencia, Tecnología e Innovación",
   
   // ========== CONFIGURACIÓN DEL CHAT ==========
   // Mensaje inicial del bot
-  INITIAL_BOT_MESSAGE: "Hola 👋 Soy el **Asistente Inteligente MISW4411**. Pregúntame sobre el curso o temas relacionados con **Grandes Modelos de Lenguaje**.\n\n",
+  INITIAL_BOT_MESSAGE: "¡Hola! 👋 Soy tu **Asistente de Convocatorias MinCiencias**.\n\nEstoy especializado en ayudarte a encontrar información sobre las **convocatorias del Ministerio de Ciencia, Tecnología e Innovación de Colombia (MinCiencias)**.\n\n**Puedo responder preguntas sobre:**\n\n📢 **Convocatorias**\n- Listar convocatorias existentes\n- Criterios de elegibilidad\n\n📅 **Fechas importantes**\n- Fechas de apertura\n- Fechas de cierre\n\n💵 **Información financiera**\n- Recursos disponibles\n\n**¿Qué convocatoria del MinCiencias te interesa?** 🎯\n",
   
   // Placeholder del input
-  INPUT_PLACEHOLDER: "Escribe tu pregunta para el RAG...",
+  INPUT_PLACEHOLDER: "Pregunta sobre convocatorias del MinCiencias...",
   
   // ========== CONFIGURACIÓN DE AGENTES ==========
   // Título del Agente RAG
-  AGENT_RAG_TITLE: "Agente RAG MISW4411",
+  AGENT_RAG_TITLE: "Agente RAG - Convocatorias MinCiencias",
   
   // Título del Agente Especializado
-  AGENT_SPECIALIZED_TITLE: "Agente Especializado MISW4411",
+  AGENT_SPECIALIZED_TITLE: "Agente Especializado - Convocatorias MinCiencias",
   
   // Placeholder del input para Agente Especializado
-  AGENT_SPECIALIZED_INPUT_PLACEHOLDER: "Información para la tarea a realizar...",
+  AGENT_SPECIALIZED_INPUT_PLACEHOLDER: "Consulta sobre convocatorias, requisitos o información específica...",
   
   // ========== CONFIGURACIÓN DEL BACKEND ==========
   // URL del backend (Docker container en localhost:8000)
-  // Se puede sobrescribir con la variable de entorno VITE_BACKEND_URL
-  BACKEND_URL: import.meta.env.VITE_BACKEND_URL || "http://35.208.246.124:8000",
+  BACKEND_URL: "http://35.208.246.124:8000",
   
   // Endpoints de la API
   RAG_ENDPOINT: "/ask_rag",

@@ -85,11 +85,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <div className="flex items-center space-x-2">
                 <div 
                   className="w-8 h-8 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: '#342276' }}
+                  style={{ backgroundColor: '#306238' }}
                 >
                   <span className="text-white font-bold text-sm">M</span>
                 </div>
-                <span className="text-lg font-bold" style={{ color: '#342276' }}>
+                <span className="text-lg font-bold" style={{ color: '#306238' }}>
                   MISW4411
                 </span>
               </div>
@@ -107,17 +107,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <div className="p-6">
               <div className="space-y-4">
                 <div className="flex items-center space-x-3 text-gray-700">
-                  <MessageSquare className="w-5 h-5" style={{ color: '#342276' }} />
+                  <MessageSquare className="w-5 h-5" style={{ color: '#306238' }} />
                   <span className="font-medium">Chat Principal</span>
                 </div>
                 
                 <div className="flex items-center space-x-3 text-gray-700">
-                  <Settings className="w-5 h-5" style={{ color: '#342276' }} />
+                  <Settings className="w-5 h-5" style={{ color: '#306238' }} />
                   <span className="font-medium">Configuración</span>
                 </div>
                 
                 <div className="flex items-center space-x-3 text-gray-700">
-                  <HelpCircle className="w-5 h-5" style={{ color: '#342276' }} />
+                  <HelpCircle className="w-5 h-5" style={{ color: '#306238' }} />
                   <span className="font-medium">Ayuda</span>
                 </div>
               </div>
