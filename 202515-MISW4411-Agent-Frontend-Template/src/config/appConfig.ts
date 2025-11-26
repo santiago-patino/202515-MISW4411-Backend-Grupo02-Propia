@@ -35,8 +35,9 @@ export const APP_CONFIG = {
   AGENT_SPECIALIZED_INPUT_PLACEHOLDER: "Consulta sobre convocatorias, requisitos o información específica...",
   
   // ========== CONFIGURACIÓN DEL BACKEND ==========
-  // URL del backend (Docker container en localhost:8000)
-  BACKEND_URL: "http://35.208.246.124:8000",
+  // URL del backend: se toma de la variable de entorno VITE_BACKEND_URL (definida en Docker o .env)
+  // y, si no existe, por defecto apunta a localhost:8000 para desarrollo local.
+  BACKEND_URL: (import.meta as any).env.VITE_BACKEND_URL || "http://localhost:8000",
   
   // Endpoints de la API
   RAG_ENDPOINT: "/ask_rag",
