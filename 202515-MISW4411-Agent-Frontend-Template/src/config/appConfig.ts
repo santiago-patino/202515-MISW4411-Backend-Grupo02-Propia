@@ -19,7 +19,7 @@ export const APP_CONFIG = {
   
   // ========== CONFIGURACIÓN DEL CHAT ==========
   // Mensaje inicial del bot
-  INITIAL_BOT_MESSAGE: "¡Hola! 👋 Soy tu **Asistente de Convocatorias MinCiencias**.\n\nEstoy especializado en ayudarte a encontrar información sobre las **convocatorias del Ministerio de Ciencia, Tecnología e Innovación de Colombia (MinCiencias)**.\n\n**Puedo responder preguntas sobre:**\n\n📢 **Convocatorias**\n- Listar convocatorias existentes\n- Criterios de elegibilidad\n\n📅 **Fechas importantes**\n- Fechas de apertura\n- Fechas de cierre\n\n💵 **Información financiera**\n- Recursos disponibles\n\n**¿Qué convocatoria del MinCiencias te interesa?** 🎯\n",
+  INITIAL_BOT_MESSAGE: "¡Hola! 👋 Soy tu **Asistente de Convocatorias MinCiencias**.\n\nEstoy especializado en ayudarte a encontrar información sobre las **convocatorias del Ministerio de Ciencia, Tecnología e Innovación de Colombia (MinCiencias)**.\n\n**Puedo responder preguntas sobre:**\n\n📢 **Convocatorias**\n- Listar convocatorias existentes\n- Criterios de elegibilidad\n\n📅 **Fechas importantes**\n- Fechas de apertura\n- Fechas de cierre\n\n💵 **Información financiera**\n- Recursos disponibles\n\n📧 **También puedo enviar el historial de nuestra conversación por correo electrónico**\n\n**¿Qué convocatoria del MinCiencias te interesa?** 🎯\n",
   
   // Placeholder del input
   INPUT_PLACEHOLDER: "Pregunta sobre convocatorias del MinCiencias...",
